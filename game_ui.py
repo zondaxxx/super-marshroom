@@ -184,13 +184,35 @@ def draw_menu(game):
     screen = game.screen
     screen.fill((20, 30, 60))
     
+    # Load and display the meme image at the top
+    try:
+        meme_img = pygame.image.load("mario_meme.jpeg")
+        # Scale the image to fit nicely at the top
+        img_width, img_height = meme_img.get_size()
+        max_width = 400
+        if img_width > max_width:
+            scale_factor = max_width / img_width
+            new_width = int(img_width * scale_factor)
+            new_height = int(img_height * scale_factor)
+            meme_img = pygame.transform.scale(meme_img, (new_width, new_height))
+        
+        # Center the image at the top
+        img_rect = meme_img.get_rect(center=(700, 100))
+        screen.blit(meme_img, img_rect)
+        
+        # Adjust title position to be below the image
+        title_y = img_rect.bottom + 30
+    except (pygame.error, FileNotFoundError):
+        # If image fails to load, use original title position
+        title_y = 200
+    
     # Title
     title = game.font_large.render("SUPER MUSHROOM", True, UI_COLORS['text_secondary'])
-    title_rect = title.get_rect(center=(700, 200))
+    title_rect = title.get_rect(center=(700, title_y))
     screen.blit(title, title_rect)
     
     subtitle = game.font_medium.render("Battle Edition", True, UI_COLORS['text_primary'])
-    subtitle_rect = subtitle.get_rect(center=(700, 270))
+    subtitle_rect = subtitle.get_rect(center=(700, title_y + 70))
     screen.blit(subtitle, subtitle_rect)
     
     # Menu items
@@ -202,10 +224,13 @@ def draw_menu(game):
         f"Total Score: {game.score}"
     ]
     
+    # Adjust menu position based on title position
+    menu_start_y = title_y + 150
+    
     for i, item in enumerate(menu_items):
         color = UI_COLORS['text_primary'] if i < 3 else UI_COLORS['text_secondary']
         text = game.font_small.render(item, True, color)
-        text_rect = text.get_rect(center=(700, 400 + i * 50))
+        text_rect = text.get_rect(center=(700, menu_start_y + i * 50))
         screen.blit(text, text_rect)
     
     # Feature highlights
@@ -216,9 +241,12 @@ def draw_menu(game):
         "🏔️ 5 challenging levels!"
     ]
     
+    # Adjust features position
+    features_start_y = menu_start_y + len(menu_items) * 50 + 50
+    
     for i, feature in enumerate(features):
         text = game.font_small.render(feature, True, UI_COLORS['text_success'])
-        text_rect = text.get_rect(center=(700, 700 + i * 30))
+        text_rect = text.get_rect(center=(700, features_start_y + i * 30))
         screen.blit(text, text_rect)
 
 def draw_level_select(game):
